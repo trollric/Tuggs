@@ -7,6 +7,9 @@ int button_one = 3;
 int button_two = 4;
 int button_state = 0;
 
+byte shadow_first;
+byte shadow_middle;
+byte shadow_last;
 byte last_eight = B11111111;
 byte middle_eight = B11111111;
 byte first_eight = B11111111;
@@ -81,7 +84,7 @@ void game_intro(){
   }
   bit_clear();
   for(int i = 0;i<24;i++){
-    bit_wave(250);
+    bit_wave(100);
   }
   bit_clear();
   delay(100);
@@ -111,15 +114,62 @@ void bit_test(){
 }
 
 int button_pressed(){
-  return 1;
+  if(digitalRead(button_one)){
+    return 1;
+  }
+  else if(digitalRead(button_two)){
+    return 2;
+  }
+  else{
+    return 0;
+  }
+}
+
+void bit_blink_player(int player){
+  switch(button_state){
+    case 1:
+      for(int i = 0; i<4; i++){
+        shadow_last &= B11111000;
+        bit_write(shadow_first, shadow_middle, shadow_last);
+        delay(300);
+        shadow_last ^= B00000111;
+        bit_write(shadow_first, shadow_middle, shadow_middle);
+        delay(300);
+      }
+    break;
+    case 2:
+      for(int i = 0; i<4; i++){
+        shadow_last &= B11000111;
+        bit_write(shadow_first, shadow_middle, shadow_last);
+        delay(300);
+        shadow_last ^= B00111000;
+        bit_write(shadow_first, shadow_middle, shadow_middle);
+        delay(300);
+      }
+    break;
+  }
+}
+
+void update_shadowbytes(){
+  shadow_first = first_eight;
+  shadow_middle = middle_eight;
+  shadow_last = last_eight;
 }
 
 void loop(){
   //bit_test();
   game_intro();
   while(!game_finished){
+    update_shadowbytes();
     while(!((digitalRead(button_one) && player_one_active) || (digitalRead(button_two) && player_two_active))){}
-    button_pressed =
-    switch()
+    button_state = button_pressed();
+    switch(button_state){
+      case 1:
+        bit_blink_player(button_state);
+        break;
+      case 2:
+        bit_blink_player(button_state);
+        break;
+    }
   }
 }
