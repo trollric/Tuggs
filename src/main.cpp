@@ -41,7 +41,6 @@ bool player_five_active = true;
 bool player_six_active = true;
 bool player_seven_active = true;
 bool player_eight_active = true;
-bool answer;
 
 void setup(){
   pinMode(serial_input, OUTPUT);
@@ -108,7 +107,7 @@ void game_intro(){
   delay(100);
   bit_write(first_eight, middle_eight, last_eight);
 }
-
+/*
 void bit_test(){
   delay(1000);
   bit_write(first_eight, middle_eight, last_eight);
@@ -130,7 +129,7 @@ void bit_test(){
     bit_wave(100);
   }
 }
-
+*/
 int button_pressed(){ //Reads which button was pressed. Return button nr
   if(digitalRead(button_one)){
     return 1;
@@ -154,7 +153,7 @@ void bit_blink_player(int player){
         bit_write(shadow_first, shadow_middle, shadow_middle);
         delay(300);
       }
-    break;
+      break;
     case 2:
       for(int i = 0; i<4; i++){
         shadow_last &= B11000111;
@@ -164,7 +163,71 @@ void bit_blink_player(int player){
         bit_write(shadow_first, shadow_middle, shadow_middle);
         delay(300);
       }
-    break;
+      break;
+    case 3:
+      for(int i = 0; i<4; i++){
+        shadow_last &= B00111111;
+        shadow_middle &= B11111110;
+        bit_write(shadow_first, shadow_middle, shadow_last);
+        delay(300);
+        shadow_last ^= B11000000;
+        shadow_middle ^= B00000001;
+        bit_write(shadow_first, shadow_middle, shadow_middle);
+        delay(300);
+      }
+      break;
+    case 4:
+      for(int i = 0; i<4; i++){
+        shadow_middle &= B11110001;
+        bit_write(shadow_first, shadow_middle, shadow_last);
+        delay(300);
+        shadow_middle ^= B00001110;
+        bit_write(shadow_first, shadow_middle, shadow_middle);
+        delay(300);
+      }
+      break;
+    case 5:
+      for(int i = 0; i<4; i++){
+        shadow_middle &= B10001111;
+        bit_write(shadow_first, shadow_middle, shadow_last);
+        delay(300);
+        shadow_middle ^= B01110000;
+        bit_write(shadow_first, shadow_middle, shadow_middle);
+        delay(300);
+      }
+      break;
+    case 6:
+      for(int i = 0; i<4; i++){
+        shadow_middle &= B01111111;
+        shadow_first  &= B11111100;
+        bit_write(shadow_first, shadow_middle, shadow_last);
+        delay(300);
+        shadow_middle ^= B10000000;
+        shadow_first ^= B00000011;
+        bit_write(shadow_first, shadow_middle, shadow_middle);
+        delay(300);
+      }
+      break;
+    case 7:
+      for(int i = 0; i<4; i++){
+        shadow_first  &= B11100011;
+        bit_write(shadow_first, shadow_middle, shadow_last);
+        delay(300);
+        shadow_first ^= B00011100;
+        bit_write(shadow_first, shadow_middle, shadow_middle);
+        delay(300);
+      }
+      break;
+    case 8:
+      for(int i = 0; i<4; i++) {
+        shadow_first &= B00011111;
+        bit_write(shadow_first, shadow_middle, shadow_last);
+        delay(300);
+        shadow_first ^= B11100000;
+        bit_write(shadow_first, shadow_middle, shadow_last);
+        delay(300);
+      }
+      break;
   }
 }
 
@@ -395,6 +458,57 @@ bool game_finished(){ //Counts the ammount of active players. When one remain th
   }
 }
 
+void blink_winner(){
+  if (player_one_active) {
+    bit_blink_player(1);
+  }
+  if (player_two_active) {
+    bit_blink_player(2);
+  }
+  if (player_three_active) {
+    bit_blink_player(3);
+  }
+  if (player_four_active) {
+    bit_blink_player(4);
+  }
+  if (player_five_active) {
+    bit_blink_player(5);
+  }
+  if (player_six_active) {
+    bit_blink_player(6);
+  }
+  if (player_seven_active) {
+    bit_blink_player(7);
+  }
+  if (player_eight_active) {
+    bit_blink_player(8);
+  }
+}
+
+void game_reset(){ // Sets Player active with three life, and reset the bytes
+  player_one_active = true;
+  player_two_active = true;
+  player_three_active = true;
+  player_four_active = true;
+  player_five_active = true;
+  player_six_active = true;
+  player_seven_active = true;
+  player_eight_active = true;
+
+  player_one_life = 3;
+  player_two_life = 3;
+  player_three_life = 3;
+  player_four_life = 3;
+  player_five_life = 3;
+  player_six_life = 3;
+  player_seven_life = 3;
+  player_eight_life = 3;
+
+  first_eight = B11111111;
+  middle_eight = B11111111;
+  last_eight = B11111111;
+}
+
 void loop(){
   //bit_test();
   game_intro();
@@ -404,4 +518,8 @@ void loop(){
     update_gamelogic(); //Uppdate the main bits
     bit_write(first_eight, middle_eight, last_eight); //Render the mainbits
   }
+  for(int i=0;i<10;i++){
+    blink_winner();
+  }
+  game_reset();
 }
