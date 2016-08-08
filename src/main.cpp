@@ -32,7 +32,7 @@ byte middle_eight = B11111111;
 byte first_eight = B11111111;
 byte bits_clear = B00000000;
 
-bool game_finished = false;
+//bool game_finished = false;
 bool player_one_active = true;
 bool player_two_active = true;
 bool player_three_active = true;
@@ -184,7 +184,7 @@ void update_shadowbytes(){
   shadow_last = last_eight;
 }   //sets the shadowbytes to the same as the mainbytes
 
-void update_life(int player){
+void update_life(int player){ //Waits for check_answer to return tue/false then updates life accordingly
   switch (player) {
     case 1:
       if(!check_answer()){
@@ -268,16 +268,140 @@ void check_for_inputs(){ //reads the buttons and blinks the highlighted player
 }
 
 void update_gamelogic(){  //Uppdates the three main bits
+  switch (player_one_life) {
+    case 2:
+      last_eight &= B11111110;
+      break;
+    case 1:
+      last_eight &= B11111100;
+      break;
+    case 0:
+      last_eight &= B11111000;
+      break;
+  }
+  switch (player_two_life) {
+    case 2:
+      last_eight &= B11110111;
+      break;
+    case 1:
+      last_eight &= B11100111;
+      break;
+    case 0:
+      last_eight &= B11000111;
+      break;
+  }
+  switch(player_three_life){
+    case 2:
+      last_eight &= B10111111;
+      break;
+    case 1:
+      last_eight &= B00111111;
+      break;
+    case 0:
+      last_eight &= B00111111;
+      middle_eight &= B11111110;
+      break;
+  }
+  switch (player_four_life) {
+    case 2:
+      middle_eight &= B11111101;
+      break;
+    case 1:
+      middle_eight &= B11111001;
+      break;
+    case 0:
+      middle_eight &= B11110001;
+      break;
+  }
+  switch (player_five_life) {
+    case 2:
+      middle_eight &= B11101111;
+      break;
+    case 1:
+      middle_eight &= B11001111;
+      break;
+    case 0:
+      middle_eight &= B10001111;
+      break;
+  }
+  switch (player_six_life) {
+    case 2:
+      middle_eight &= B01111111;
+      break;
+    case 1:
+      middle_eight &= B01111111;
+      first_eight &= B11111110;
+      break;
+    case 0:
+      middle_eight &= B01111111;
+      first_eight &= B11111100;
+      break;
+  }
+  switch (player_seven_life) {
+    case 2:
+      first_eight &= B11111011;
+      break;
+    case 1:
+      first_eight &= B11110011;
+      break;
+    case 0:
+      first_eight &= B11100011;
+      break;
+  }
+  switch (player_eight_life) {
+    case 2:
+      first_eight &= B11011111;
+      break;
+    case 1:
+      first_eight &= B10011111;
+      break;
+    case 0:
+      first_eight &= B00011111;
+      break;
+  }
+}
 
+bool game_finished(){ //Counts the ammount of active players. When one remain the game is over
+  int count = 0;
+  if(player_one_active){
+    count++;
+  }
+  if (player_two_active) {
+    count++;
+  }
+  if (player_three_active) {
+    count++;
+  }
+  if (player_four_active) {
+    count++;
+  }
+  if (player_five_active) {
+    count++;
+  }
+  if (player_six_active) {
+    count++;
+  }
+  if (player_seven_active) {
+    count++;
+  }
+  if (player_eight_active) {
+    count++;
+  }
+  if(count <= 1){
+    return true;
+  }
+  else{
+    return false;
+  }
 }
 
 void loop(){
   //bit_test();
   game_intro();
-  while(!game_finished){
-    update_shadowbytes();
-    check_for_inputs();
-    update_gamelogic();
-    bit_write(first_eight, middle_eight, last_eight);
+  while(!game_finished()){
+    update_shadowbytes(); //Updates the shadowbytes for player blinkfunction
+    check_for_inputs(); //Awaits aplayerbutton beeing pressed;
+    update_gamelogic(); //Uppdate the main bits
+    bit_write(first_eight, middle_eight, last_eight); //Render the mainbits
   }
 }
