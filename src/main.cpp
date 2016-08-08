@@ -131,7 +131,7 @@ void bit_test(){
   }
 }
 
-int button_pressed(){
+int button_pressed(){ //Reads which button was pressed. Return button nr
   if(digitalRead(button_one)){
     return 1;
   }
@@ -168,7 +168,7 @@ void bit_blink_player(int player){
   }
 }
 
-bool check_answer(){
+bool check_answer(){ //Returns 1 if the true button is pressed otherwise returns zero  //Waits for button_trye/false and then returns 1/0
   while(!(digitalRead(button_true) || digitalRead(button_false))){}
   if (digitalRead(button_true)) {
     return 1;
@@ -176,12 +176,99 @@ bool check_answer(){
   else if(digitalRead(button_false)){
     return 0;
   }
-} //Returns 1 if the true button is pressed otherwise returns zero
+}
 
 void update_shadowbytes(){
   shadow_first = first_eight;
   shadow_middle = middle_eight;
   shadow_last = last_eight;
+}   //sets the shadowbytes to the same as the mainbytes
+
+void update_life(int player){
+  switch (player) {
+    case 1:
+      if(!check_answer()){
+        player_one_life -= 1;
+        if(player_one_life <= 0){
+          player_one_active = false;
+        }
+      }
+      break;
+    case 2:
+      if(!check_answer()){
+        player_two_life -= 1;
+        if(player_two_life <= 0){
+          player_two_active = false;
+        }
+      }
+      break;
+    case 3:
+      if(!check_answer()){
+        player_three_life -= 1;
+        if(player_three_life <= 0){
+          player_three_active = false;
+        }
+      }
+      break;
+    case 4:
+      if(!check_answer()){
+        player_four_life -= 1;
+        if(player_four_life <= 0){
+          player_four_active = false;
+        }
+      }
+      break;
+    case 5:
+      if(!check_answer()){
+        player_five_life -= 1;
+        if(player_five_life <= 0){
+          player_five_active = false;
+        }
+      }
+      break;
+    case 6:
+      if(!check_answer()){
+        player_six_life -= 1;
+        if(player_six_life <= 0){
+          player_six_active = false;
+        }
+      }
+      break;
+    case 7:
+      if(!check_answer()){
+        player_seven_life -= 1;
+        if(player_seven_life <= 0){
+          player_seven_active = false;
+        }
+      }
+      break;
+    case 8:
+      if(!check_answer()){
+        player_eight_life -= 1;
+        if(player_eight_life <= 0){
+          player_eight_active = false;
+        }
+      }
+      break;
+  }
+}
+
+void check_for_inputs(){ //reads the buttons and blinks the highlighted player
+  while(!((digitalRead(button_one) && player_one_active) || (digitalRead(button_two) && player_two_active))){}
+  button_state = button_pressed();
+  switch(button_state){
+    case 1:
+      bit_blink_player(button_state);
+      break;
+    case 2:
+      bit_blink_player(button_state);
+      break;
+  }
+  update_life(button_state);
+}
+
+void update_gamelogic(){  //Uppdates the three main bits
+
 }
 
 void loop(){
@@ -189,16 +276,8 @@ void loop(){
   game_intro();
   while(!game_finished){
     update_shadowbytes();
-    while(!((digitalRead(button_one) && player_one_active) || (digitalRead(button_two) && player_two_active))){}
-    button_state = button_pressed();
-    switch(button_state){
-      case 1:
-        bit_blink_player(button_state);
-        answer = check_answer();
-        break;
-      case 2:
-        bit_blink_player(button_state);
-        break;
-    }
+    check_for_inputs();
+    update_gamelogic();
+    bit_write(first_eight, middle_eight, last_eight);
   }
 }
