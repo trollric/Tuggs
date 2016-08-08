@@ -5,7 +5,24 @@ int clk_pulse = 7;
 int latch_pin = 8;
 int button_one = 3;
 int button_two = 4;
+int button_three;
+int button_four;
+int button_five;
+int button_six;
+int button_seven;
+int button_eight;
+int button_true;
+int button_false;
 int button_state = 0;
+
+char player_one_life = 3;
+char player_two_life = 3;
+char player_three_life = 3;
+char player_four_life = 3;
+char player_five_life = 3;
+char player_six_life = 3;
+char player_seven_life = 3;
+char player_eight_life = 3;
 
 byte shadow_first;
 byte shadow_middle;
@@ -24,6 +41,7 @@ bool player_five_active = true;
 bool player_six_active = true;
 bool player_seven_active = true;
 bool player_eight_active = true;
+bool answer;
 
 void setup(){
   pinMode(serial_input, OUTPUT);
@@ -126,7 +144,7 @@ int button_pressed(){
 }
 
 void bit_blink_player(int player){
-  switch(button_state){
+  switch(player){
     case 1:
       for(int i = 0; i<4; i++){
         shadow_last &= B11111000;
@@ -150,6 +168,16 @@ void bit_blink_player(int player){
   }
 }
 
+bool check_answer(){
+  while(!(digitalRead(button_true) || digitalRead(button_false))){}
+  if (digitalRead(button_true)) {
+    return 1;
+  }
+  else if(digitalRead(button_false)){
+    return 0;
+  }
+} //Returns 1 if the true button is pressed otherwise returns zero
+
 void update_shadowbytes(){
   shadow_first = first_eight;
   shadow_middle = middle_eight;
@@ -166,6 +194,7 @@ void loop(){
     switch(button_state){
       case 1:
         bit_blink_player(button_state);
+        answer = check_answer();
         break;
       case 2:
         bit_blink_player(button_state);
