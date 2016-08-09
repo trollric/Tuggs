@@ -5,24 +5,24 @@ int clk_pulse = 7;
 int latch_pin = 8;
 int button_one = 3;
 int button_two = 4;
-int button_three;
+int button_three = 5;
 int button_four;
 int button_five;
 int button_six;
 int button_seven;
 int button_eight;
-int button_true;
-int button_false;
+int button_true = 13;
+int button_false = 12;
 int button_state = 0;
 
-char player_one_life = 3;
-char player_two_life = 3;
-char player_three_life = 3;
-char player_four_life = 3;
-char player_five_life = 3;
-char player_six_life = 3;
-char player_seven_life = 3;
-char player_eight_life = 3;
+int player_one_life = 3;
+int player_two_life = 3;
+int player_three_life = 3;
+int player_four_life = 3;
+int player_five_life = 3;
+int player_six_life = 3;
+int player_seven_life = 3;
+int player_eight_life = 3;
 
 byte shadow_first;
 byte shadow_middle;
@@ -43,19 +43,20 @@ bool player_seven_active = true;
 bool player_eight_active = true;
 
 void setup(){
+  //Set uploads
   pinMode(serial_input, OUTPUT);
   pinMode(clk_pulse, OUTPUT);
   pinMode(latch_pin, OUTPUT);
 
+  //Set inputs
   pinMode(button_one, INPUT);
   pinMode(button_two, INPUT);
+  pinMode(button_three, INPUT);
+  pinMode(button_false, INPUT);
+  pinMode(button_true, INPUT);
 
-  //Light up all leds in the beginning
-  digitalWrite(latch_pin, LOW);
-  shiftOut(serial_input, clk_pulse, MSBFIRST, first_eight);
-  shiftOut(serial_input, clk_pulse, MSBFIRST, middle_eight);
-  shiftOut(serial_input, clk_pulse, MSBFIRST, last_eight);
-  digitalWrite(latch_pin, HIGH);
+  //Serial monitor for debugging
+  Serial.begin(9600);
 }
 
 void bit_clear(){
@@ -130,6 +131,54 @@ void bit_test(){
   }
 }
 */
+
+void print_player_life(){
+  Serial.println("player 1 life");
+  Serial.println(player_one_life);
+  Serial.println(" ");
+  Serial.println("player 2 life");
+  Serial.println(player_two_life);
+  Serial.println(" ");
+  Serial.println("player 3 life");
+  Serial.println(player_three_life);
+  Serial.println(" ");
+}
+
+void print_player_states(){
+  Serial.println("Player 1 State");
+  Serial.println(player_one_active);
+  Serial.println(" ");
+  Serial.println("Player 2 State");
+  Serial.println(player_two_active);
+  Serial.println(" ");
+  Serial.println("Player 3 State");
+  Serial.println(player_three_active);
+  Serial.println(" ");
+}
+
+void print_shadowBytes(){
+  Serial.println("ShadowBytesprint");
+  Serial.println(shadow_first, BIN);
+  Serial.println(shadow_middle, BIN);
+  Serial.println(shadow_last, BIN);
+  Serial.println(" ");
+}
+
+void print_gameBytes(){
+  Serial.println("GameBytes");
+  Serial.println(first_eight, BIN);
+  Serial.println(middle_eight, BIN);
+  Serial.println(last_eight, BIN);
+  Serial.println(" ");
+}
+
+void print_all_variables(){
+  print_player_life();
+  print_player_states();
+  print_gameBytes();
+  print_shadowBytes();
+}
+
 int button_pressed(){ //Reads which button was pressed. Return button nr
   if(digitalRead(button_one)){
     return 1;
@@ -137,6 +186,26 @@ int button_pressed(){ //Reads which button was pressed. Return button nr
   else if(digitalRead(button_two)){
     return 2;
   }
+  else if(digitalRead(button_three)){
+    return 3;
+  }
+  /*
+  else if(digitalRead(button_four)){
+    return 4;
+  }
+  else if(digitalRead(button_five)){
+    return 5;
+  }
+  else if(digitalRead(button_six)){
+    return 6;
+  }
+  else if(digitalRead(button_seven)){
+    return 7;
+  }
+  else if(digitalRead(button_eight)){
+    return 8;
+  }
+  */
   else{
     return 0;
   }
@@ -150,7 +219,7 @@ void bit_blink_player(int player){
         bit_write(shadow_first, shadow_middle, shadow_last);
         delay(300);
         shadow_last ^= B00000111;
-        bit_write(shadow_first, shadow_middle, shadow_middle);
+        bit_write(shadow_first, shadow_middle, shadow_last);
         delay(300);
       }
       break;
@@ -160,7 +229,7 @@ void bit_blink_player(int player){
         bit_write(shadow_first, shadow_middle, shadow_last);
         delay(300);
         shadow_last ^= B00111000;
-        bit_write(shadow_first, shadow_middle, shadow_middle);
+        bit_write(shadow_first, shadow_middle, shadow_last);
         delay(300);
       }
       break;
@@ -172,7 +241,7 @@ void bit_blink_player(int player){
         delay(300);
         shadow_last ^= B11000000;
         shadow_middle ^= B00000001;
-        bit_write(shadow_first, shadow_middle, shadow_middle);
+        bit_write(shadow_first, shadow_middle, shadow_last);
         delay(300);
       }
       break;
@@ -182,7 +251,7 @@ void bit_blink_player(int player){
         bit_write(shadow_first, shadow_middle, shadow_last);
         delay(300);
         shadow_middle ^= B00001110;
-        bit_write(shadow_first, shadow_middle, shadow_middle);
+        bit_write(shadow_first, shadow_middle, shadow_last);
         delay(300);
       }
       break;
@@ -192,7 +261,7 @@ void bit_blink_player(int player){
         bit_write(shadow_first, shadow_middle, shadow_last);
         delay(300);
         shadow_middle ^= B01110000;
-        bit_write(shadow_first, shadow_middle, shadow_middle);
+        bit_write(shadow_first, shadow_middle, shadow_last);
         delay(300);
       }
       break;
@@ -204,7 +273,7 @@ void bit_blink_player(int player){
         delay(300);
         shadow_middle ^= B10000000;
         shadow_first ^= B00000011;
-        bit_write(shadow_first, shadow_middle, shadow_middle);
+        bit_write(shadow_first, shadow_middle, shadow_last);
         delay(300);
       }
       break;
@@ -214,7 +283,7 @@ void bit_blink_player(int player){
         bit_write(shadow_first, shadow_middle, shadow_last);
         delay(300);
         shadow_first ^= B00011100;
-        bit_write(shadow_first, shadow_middle, shadow_middle);
+        bit_write(shadow_first, shadow_middle, shadow_last);
         delay(300);
       }
       break;
@@ -228,79 +297,84 @@ void bit_blink_player(int player){
         delay(300);
       }
       break;
+    default:
+      Serial.println("Something went wrong");
+      break;
   }
 }
 
 bool check_answer(){ //Returns 1 if the true button is pressed otherwise returns zero  //Waits for button_trye/false and then returns 1/0
   while(!(digitalRead(button_true) || digitalRead(button_false))){}
   if (digitalRead(button_true)) {
+    Serial.println("That Anwser was correct!");
     return 1;
   }
   else if(digitalRead(button_false)){
+    Serial.println("That Anwser was incorrect! GOOD DAY SIR, YOU LOSE");
     return 0;
   }
 }
 
-void update_shadowbytes(){
+void update_shadowbytes(){ //sets the shadowbytes to the same as the mainbytes
   shadow_first = first_eight;
   shadow_middle = middle_eight;
   shadow_last = last_eight;
-}   //sets the shadowbytes to the same as the mainbytes
+}
 
 void update_life(int player){ //Waits for check_answer to return tue/false then updates life accordingly
   switch (player) {
     case 1:
       if(!check_answer()){
-        player_one_life -= 1;
-        if(player_one_life <= 0){
+        player_one_life--;
+        if(player_one_life == 0){
           player_one_active = false;
         }
       }
       break;
     case 2:
       if(!check_answer()){
-        player_two_life -= 1;
-        if(player_two_life <= 0){
+        player_two_life--;
+        if(player_two_life == 0){
           player_two_active = false;
         }
       }
       break;
     case 3:
       if(!check_answer()){
-        player_three_life -= 1;
-        if(player_three_life <= 0){
+        player_three_life--;
+        if(player_three_life == 0){
           player_three_active = false;
         }
       }
       break;
     case 4:
       if(!check_answer()){
-        player_four_life -= 1;
-        if(player_four_life <= 0){
+        player_four_life--;
+        if(player_four_life == 0){
           player_four_active = false;
         }
       }
       break;
     case 5:
       if(!check_answer()){
-        player_five_life -= 1;
-        if(player_five_life <= 0){
+        player_five_life--;
+        if(player_five_life == 0){
           player_five_active = false;
         }
       }
       break;
     case 6:
       if(!check_answer()){
-        player_six_life -= 1;
-        if(player_six_life <= 0){
+        player_six_life--;
+        if(player_six_life == 0){
           player_six_active = false;
         }
       }
       break;
     case 7:
       if(!check_answer()){
-        player_seven_life -= 1;
-        if(player_seven_life <= 0){
+        player_seven_life--;
+        if(player_seven_life == 0){
           player_seven_active = false;
         }
       }
@@ -308,7 +382,7 @@ void update_life(int player){ //Waits for check_answer to return tue/false then 
     case 8:
       if(!check_answer()){
         player_eight_life -= 1;
-        if(player_eight_life <= 0){
+        if(player_eight_life == 0){
           player_eight_active = false;
         }
       }
@@ -316,18 +390,53 @@ void update_life(int player){ //Waits for check_answer to return tue/false then 
   }
 }
 
-void check_for_inputs(){ //reads the buttons and blinks the highlighted player
-  while(!((digitalRead(button_one) && player_one_active) || (digitalRead(button_two) && player_two_active))){}
-  button_state = button_pressed();
-  switch(button_state){
-    case 1:
-      bit_blink_player(button_state);
-      break;
-    case 2:
-      bit_blink_player(button_state);
-      break;
+bool check_button_pressed(){  //Returns true if a button and
+  if((digitalRead(button_one) && player_one_active)){
+    Serial.println("Player one highlighted");
+    return true;
   }
-  update_life(button_state);
+  else if((digitalRead(button_two) && player_two_active)){
+    Serial.println("Player two highlighted");
+    return true;
+  }
+  else if((digitalRead(button_three) && player_three_active)){
+    Serial.println("Player three highlighted");
+    return true;
+  }
+  /*
+  else if((digitalRead(button_four) && player_four_active)){
+    Serial.println("Player four highlighted");
+    return true;
+  }
+  else if((digitalRead(button_five) && player_five_active)){
+    Serial.println("Player five highlighted");
+    return true;
+  }
+  else if((digitalRead(button_six) && player_six_active)){
+    Serial.println("Player six highlighted");
+    return true;
+  }
+  else if((digitalRead(button_seven) && player_seven_active)){
+    Serial.println("Player seven highlighted");
+    return true;
+  }
+  else if((digitalRead(button_eight) && player_eight_active)){
+    Serial.println("Player eight highlighted");
+    return true;
+  }
+  */
+  else{
+    return false;
+  }
+}
+
+void check_for_inputs(){ //reads the buttons and blinks the highlighted player
+  while(!check_button_pressed()){}
+  button_state = button_pressed();
+  update_shadowbytes();
+  bit_blink_player(button_state);
+  update_shadowbytes();
+  bit_write(first_eight, middle_eight, last_eight);
 }
 
 void update_gamelogic(){  //Uppdates the three main bits
@@ -435,6 +544,7 @@ bool game_finished(){ //Counts the ammount of active players. When one remain th
   if (player_three_active) {
     count++;
   }
+  /*
   if (player_four_active) {
     count++;
   }
@@ -450,6 +560,7 @@ bool game_finished(){ //Counts the ammount of active players. When one remain th
   if (player_eight_active) {
     count++;
   }
+  */
   if(count <= 1){
     return true;
   }
@@ -468,6 +579,7 @@ void blink_winner(){
   if (player_three_active) {
     bit_blink_player(3);
   }
+  /*
   if (player_four_active) {
     bit_blink_player(4);
   }
@@ -483,6 +595,7 @@ void blink_winner(){
   if (player_eight_active) {
     bit_blink_player(8);
   }
+  */
 }
 
 void game_reset(){ // Sets Player active with three life, and reset the bytes
@@ -511,13 +624,19 @@ void game_reset(){ // Sets Player active with three life, and reset the bytes
 
 void loop(){
   //bit_test();
+  Serial.println("Initiate gameintro");
   game_intro();
+  print_all_variables();
   while(!game_finished()){
     update_shadowbytes(); //Updates the shadowbytes for player blinkfunction
+    //print_shadowBytes();
     check_for_inputs(); //Awaits aplayerbutton beeing pressed;
+    update_life(button_state);
     update_gamelogic(); //Uppdate the main bits
     bit_write(first_eight, middle_eight, last_eight); //Render the mainbits
   }
+  print_player_states();
+  update_shadowbytes();
   for(int i=0;i<10;i++){
     blink_winner();
   }
