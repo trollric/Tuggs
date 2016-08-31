@@ -6,11 +6,11 @@ int latch_pin = 8;
 int button_one = 3;
 int button_two = 4;
 int button_three = 5;
-int button_four;
-int button_five;
-int button_six;
-int button_seven;
-int button_eight;
+int button_four = 6;
+int button_five = 9;
+int button_six = 10;
+int button_seven = 11;
+int button_eight = 1;
 int button_true = 13;
 int button_false = 12;
 int button_state = 0;
@@ -24,13 +24,15 @@ int player_six_life = 3;
 int player_seven_life = 3;
 int player_eight_life = 3;
 
+int konst_delay = 2000;
+
 byte shadow_first;
 byte shadow_middle;
 byte shadow_last;
-byte last_eight = B11111111;
-byte middle_eight = B11111111;
-byte first_eight = B11111111;
-byte bits_clear = B00000000;
+byte last_eight = B00000000;
+byte middle_eight = B00000000;
+byte first_eight = B00000000;
+byte bits_clear = B11111111;
 
 //bool game_finished = false;
 bool player_one_active = true;
@@ -52,6 +54,11 @@ void setup(){
   pinMode(button_one, INPUT);
   pinMode(button_two, INPUT);
   pinMode(button_three, INPUT);
+  pinMode(button_four, INPUT);
+  pinMode(button_five, INPUT);
+  pinMode(button_six, INPUT);
+  pinMode(button_seven, INPUT);
+  pinMode(button_eight, INPUT);
   pinMode(button_false, INPUT);
   pinMode(button_true, INPUT);
 
@@ -96,16 +103,16 @@ void bit_wave(int hold_time){
 void game_intro(){
   for(int i =0;i<6;i++){
     bit_clear();
-    delay(250);
+    delay(konst_delay);
     bit_write(first_eight, middle_eight, last_eight);
-    delay(250);
+    delay(konst_delay);
   }
   bit_clear();
   for(int i = 0;i<24;i++){
-    bit_wave(100);
+    bit_wave(800);
   }
   bit_clear();
-  delay(100);
+  delay(konst_delay);
   bit_write(first_eight, middle_eight, last_eight);
 }
 /*
@@ -189,7 +196,6 @@ int button_pressed(){ //Reads which button was pressed. Return button nr
   else if(digitalRead(button_three)){
     return 3;
   }
-  /*
   else if(digitalRead(button_four)){
     return 4;
   }
@@ -205,7 +211,6 @@ int button_pressed(){ //Reads which button was pressed. Return button nr
   else if(digitalRead(button_eight)){
     return 8;
   }
-  */
   else{
     return 0;
   }
@@ -215,86 +220,86 @@ void bit_blink_player(int player){
   switch(player){
     case 1:
       for(int i = 0; i<4; i++){
-        shadow_last &= B11111000;
+        shadow_last |= ~B11111000;
         bit_write(shadow_first, shadow_middle, shadow_last);
-        delay(300);
-        shadow_last ^= B00000111;
+        delay(konst_delay);
+        shadow_last &= ~B00000111;
         bit_write(shadow_first, shadow_middle, shadow_last);
-        delay(300);
+        delay(konst_delay);
       }
       break;
     case 2:
       for(int i = 0; i<4; i++){
-        shadow_last &= B11000111;
+        shadow_last |= ~B11000111;
         bit_write(shadow_first, shadow_middle, shadow_last);
-        delay(300);
-        shadow_last ^= B00111000;
+        delay(konst_delay);
+        shadow_last &= ~B00111000;
         bit_write(shadow_first, shadow_middle, shadow_last);
-        delay(300);
+        delay(konst_delay);
       }
       break;
     case 3:
       for(int i = 0; i<4; i++){
-        shadow_last &= B00111111;
-        shadow_middle &= B11111110;
+        shadow_last |= ~B00111111;
+        shadow_middle |= ~B11111110;
         bit_write(shadow_first, shadow_middle, shadow_last);
-        delay(300);
-        shadow_last ^= B11000000;
-        shadow_middle ^= B00000001;
+        delay(konst_delay);
+        shadow_last &= ~B11000000;
+        shadow_middle &= ~B00000001;
         bit_write(shadow_first, shadow_middle, shadow_last);
-        delay(300);
+        delay(konst_delay);
       }
       break;
     case 4:
       for(int i = 0; i<4; i++){
-        shadow_middle &= B11110001;
+        shadow_middle |= ~B11110001;
         bit_write(shadow_first, shadow_middle, shadow_last);
-        delay(300);
-        shadow_middle ^= B00001110;
+        delay(konst_delay);
+        shadow_middle &= ~B00001110;
         bit_write(shadow_first, shadow_middle, shadow_last);
-        delay(300);
+        delay(konst_delay);
       }
       break;
     case 5:
       for(int i = 0; i<4; i++){
-        shadow_middle &= B10001111;
+        shadow_middle |= ~B10001111;
         bit_write(shadow_first, shadow_middle, shadow_last);
-        delay(300);
-        shadow_middle ^= B01110000;
+        delay(konst_delay);
+        shadow_middle &= ~B01110000;
         bit_write(shadow_first, shadow_middle, shadow_last);
-        delay(300);
+        delay(konst_delay);
       }
       break;
     case 6:
       for(int i = 0; i<4; i++){
-        shadow_middle &= B01111111;
-        shadow_first  &= B11111100;
+        shadow_middle |= ~B01111111;
+        shadow_first  |= ~B11111100;
         bit_write(shadow_first, shadow_middle, shadow_last);
-        delay(300);
-        shadow_middle ^= B10000000;
-        shadow_first ^= B00000011;
+        delay(konst_delay);
+        shadow_middle &= ~B10000000;
+        shadow_first &= ~B00000011;
         bit_write(shadow_first, shadow_middle, shadow_last);
-        delay(300);
+        delay(konst_delay);
       }
       break;
     case 7:
       for(int i = 0; i<4; i++){
-        shadow_first  &= B11100011;
+        shadow_first  |= ~B11100011;
         bit_write(shadow_first, shadow_middle, shadow_last);
-        delay(300);
-        shadow_first ^= B00011100;
+        delay(konst_delay);
+        shadow_first &= ~B00011100;
         bit_write(shadow_first, shadow_middle, shadow_last);
-        delay(300);
+        delay(konst_delay);
       }
       break;
     case 8:
       for(int i = 0; i<4; i++) {
-        shadow_first &= B00011111;
+        shadow_first |= ~B00011111;
         bit_write(shadow_first, shadow_middle, shadow_last);
-        delay(300);
-        shadow_first ^= B11100000;
+        delay(konst_delay);
+        shadow_first &= ~B11100000;
         bit_write(shadow_first, shadow_middle, shadow_last);
-        delay(300);
+        delay(konst_delay);
       }
       break;
     default:
@@ -403,7 +408,7 @@ bool check_button_pressed(){  //Returns true if a button and
     Serial.println("Player three highlighted");
     return true;
   }
-  /*
+
   else if((digitalRead(button_four) && player_four_active)){
     Serial.println("Player four highlighted");
     return true;
@@ -424,7 +429,6 @@ bool check_button_pressed(){  //Returns true if a button and
     Serial.println("Player eight highlighted");
     return true;
   }
-  */
   else{
     return false;
   }
@@ -442,93 +446,93 @@ void check_for_inputs(){ //reads the buttons and blinks the highlighted player
 void update_gamelogic(){  //Uppdates the three main bits
   switch (player_one_life) {
     case 2:
-      last_eight &= B11111110;
+      last_eight |= B00000001;
       break;
     case 1:
-      last_eight &= B11111100;
+      last_eight |= B00000011;
       break;
     case 0:
-      last_eight &= B11111000;
+      last_eight |= B00000111;
       break;
   }
   switch (player_two_life) {
     case 2:
-      last_eight &= B11110111;
+      last_eight |= B00001000;
       break;
     case 1:
-      last_eight &= B11100111;
+      last_eight |= ~B11100111;
       break;
     case 0:
-      last_eight &= B11000111;
+      last_eight |= ~B11000111;
       break;
   }
   switch(player_three_life){
     case 2:
-      last_eight &= B10111111;
+      last_eight |= ~B10111111;
       break;
     case 1:
-      last_eight &= B00111111;
+      last_eight |= ~B00111111;
       break;
     case 0:
-      last_eight &= B00111111;
-      middle_eight &= B11111110;
+      last_eight |= ~B00111111;
+      middle_eight |= ~B11111110;
       break;
   }
   switch (player_four_life) {
     case 2:
-      middle_eight &= B11111101;
+      middle_eight |= ~B11111101;
       break;
     case 1:
-      middle_eight &= B11111001;
+      middle_eight |= ~B11111001;
       break;
     case 0:
-      middle_eight &= B11110001;
+      middle_eight |= ~B11110001;
       break;
   }
   switch (player_five_life) {
     case 2:
-      middle_eight &= B11101111;
+      middle_eight |= ~B11101111;
       break;
     case 1:
-      middle_eight &= B11001111;
+      middle_eight |= ~B11001111;
       break;
     case 0:
-      middle_eight &= B10001111;
+      middle_eight |= ~B10001111;
       break;
   }
   switch (player_six_life) {
     case 2:
-      middle_eight &= B01111111;
+      middle_eight |= ~B01111111;
       break;
     case 1:
-      middle_eight &= B01111111;
-      first_eight &= B11111110;
+      middle_eight |= ~B01111111;
+      first_eight |= ~B11111110;
       break;
     case 0:
-      middle_eight &= B01111111;
-      first_eight &= B11111100;
+      middle_eight |= ~B01111111;
+      first_eight |= ~B11111100;
       break;
   }
   switch (player_seven_life) {
     case 2:
-      first_eight &= B11111011;
+      first_eight |= ~B11111011;
       break;
     case 1:
-      first_eight &= B11110011;
+      first_eight |= ~B11110011;
       break;
     case 0:
-      first_eight &= B11100011;
+      first_eight |= ~B11100011;
       break;
   }
   switch (player_eight_life) {
     case 2:
-      first_eight &= B11011111;
+      first_eight |= ~B11011111;
       break;
     case 1:
-      first_eight &= B10011111;
+      first_eight |= ~B10011111;
       break;
     case 0:
-      first_eight &= B00011111;
+      first_eight |= ~B00011111;
       break;
   }
 }
@@ -544,7 +548,6 @@ bool game_finished(){ //Counts the ammount of active players. When one remain th
   if (player_three_active) {
     count++;
   }
-  /*
   if (player_four_active) {
     count++;
   }
@@ -560,7 +563,6 @@ bool game_finished(){ //Counts the ammount of active players. When one remain th
   if (player_eight_active) {
     count++;
   }
-  */
   if(count <= 1){
     return true;
   }
@@ -579,7 +581,6 @@ void blink_winner(){
   if (player_three_active) {
     bit_blink_player(3);
   }
-  /*
   if (player_four_active) {
     bit_blink_player(4);
   }
@@ -595,7 +596,6 @@ void blink_winner(){
   if (player_eight_active) {
     bit_blink_player(8);
   }
-  */
 }
 
 void game_reset(){ // Sets Player active with three life, and reset the bytes
@@ -617,9 +617,9 @@ void game_reset(){ // Sets Player active with three life, and reset the bytes
   player_seven_life = 3;
   player_eight_life = 3;
 
-  first_eight = B11111111;
-  middle_eight = B11111111;
-  last_eight = B11111111;
+  first_eight = B00000000;
+  middle_eight = B00000000;
+  last_eight = B00000000;
 }
 
 void loop(){
